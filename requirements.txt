@@ -1,0 +1,16 @@
+# -- --------------------------------------------------------------------------------------------------- -- #
+# -- project: Behavioral Finance                                                              -- #
+# -- script: requirements.txt : text file with the required libraries for the project                    -- #
+# -- author: Tania-Bell                                                                                  -- #
+# -- license: GPL-3.0 License                                                                            -- #
+# -- repository: https://github.com/Tania-Bell/MyST_Lab3/                                                                    -- #
+# -- --------------------------------------------------------------------------------------------------- -- #
+
+
+pandas
+scipy
+numpy
+jupyter
+pytz
+datetime
+ccxt
