@@ -1,36 +1,37 @@
+import asyncio
+import ccxt.async_support as ccxta
+import time
+import numpy as np
+import pandas as pd
 
-# Exchanges: binance, bitget, bitmart
 
-ccxt.exchanges
-
-
-
-async def importdata(exchange_id,symbol):
-    orderbook = Non
+async def async_client(exchange_id, run_time: int, symbol: str):
+    orderbook = None
     exchange = getattr(ccxta, exchange_id)()
     time_1 = time.time()
     time_f = 0
     ob = []
     while time_f <= run_time:
         try:
-            await exchange.market(symbol)
+            await exchange.load_markets()
+            market = exchange.market(symbol)
             orderbook = await exchange.fetch_order_book(market["symbol"])
             datetime = exchange.iso8601(exchange.milliseconds())
-            # unpack values
-            ask_price, ask_size =np.array(list(zip(*orderbook["asks"]))[0:2])
+            # Unpack values
+            ask_price, ask_size = np.array(list(zip(*orderbook["asks"]))[0:2])
             bid_price, bid_size = np.array(list(zip(*orderbook["bids"]))[0:2])
             spread = np.round(ask_price - bid_price, 4)
             # Final data format for the results
             ob.append(
                 {
-                    "exchange":exchange_id,
-                    "datetime":datetime,
-                    "orderbook":{
-                                "ask_size":ask_size.tolist(),
-                                "ask":ask_price.tolist(),
-                                "bid":bid_price.tolist(),
-                                "bid_size":bid_size.tolist(),
-                                "spread":spread.tolist()
+                    "exchange": exchange_id,
+                    "datetime": datetime,
+                    "orderbook": {
+                        "ask_size": ask_size.tolist(),
+                        "ask": ask_price.tolist(),
+                        "bid": bid_price.tolist(),
+                        "bid_size": bid_size.tolist(),
+                        "spread": spread.tolist(),
                     },
                 }
             )
@@ -40,14 +41,40 @@ async def importdata(exchange_id,symbol):
         except Exception as e:
             time_2 = time.time()
             time_f = round(time_2 - time_1, 4)
-            print(type(e.__name__,str(e)))
+            print(type(e).__name__, str(e))
     await exchange.close()
     return ob
 
-async def multi_orderbooks(exchanges, run_time: int, symbol: int):
+
+async def multi_orderbooks(exchanges, run_time: int, symbol: str):
     input_coroutines = [
-        async_importdata(exchange, run_time, symbol) for exchange in exchanges
+        async_client(exchange, run_time, symbol) for exchange in exchanges
     ]
     orderbooks = await asyncio.gather(*input_coroutines, return_exceptions=True)
     return orderbooks
 
+
+if __name__ == "__main__":
+    exchanges = ["bitopro", "alpaca", "bitget"]
+    run_time = 10  # seconds
+    symbol1 = "ETH/BTC"
+    symbol2 = "ETH/EUR"
+    symbol3 = "BTC/USD"
+
+    data1 = asyncio.run(multi_orderbooks(exchanges, run_time=run_time, symbol=symbol1))
+    data1 = [item for sublist in data1 for item in sublist]
+    data1 = pd.DataFrame(data1)
+
+    data2 = asyncio.run(multi_orderbooks(exchanges, run_time=run_time, symbol=symbol2))
+    data2 = [item for sublist in data2 for item in sublist]
+    data2 = pd.DataFrame(data2)
+
+    data1.append(data2)
+
+    data3 = asyncio.run(multi_orderbooks(exchanges, run_time=run_time, symbol=symbol3))
+    data3 = [item for sublist in data3 for item in sublist]
+    data3 = pd.DataFrame(data3)
+
+    data1.append(data3)
+
+    print(data1)
