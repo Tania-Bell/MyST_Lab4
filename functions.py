@@ -8,6 +8,24 @@ import ast
 
 
 async def async_client(exchange_id, run_time: int, symbol: str):
+    """
+    This function returns ask and bid price,
+    ask and bid volume, spread, mid price,
+    vwap and levels given a list of 
+    cryptocurrency trading pairs in 
+    a list of exchange markets.
+
+    Parameters
+    ---------
+    exchange_id : str
+        string of exchange markets
+    run_time : int
+    symbol : str
+        string of trading pairs
+    Returns
+    --------
+    ob : dictionary
+    """
     orderbook = None
     exchange = getattr(ccxta, exchange_id)()
     time_1 = time.time()
@@ -58,6 +76,18 @@ async def async_client(exchange_id, run_time: int, symbol: str):
 
 
 async def multi_orderbooks(exchanges, run_time: int, symbol: str):
+    """
+    Uses function async client to create
+    orderbooks.
+    
+    Parameters 
+    ----------
+    exchanges : str
+        string of exchange markets
+    run_time : int
+    symbol : str
+        string of trading pairs
+    """
     input_coroutines = [
         async_client(exchange, run_time, symbol) for exchange in exchanges
     ]
@@ -65,6 +95,17 @@ async def multi_orderbooks(exchanges, run_time: int, symbol: str):
     return orderbooks
 
 def dataframe(data):
+    """
+    Function creates dataframe with information
+    of exchange markets and trading pairs.
+    
+    Parameters
+    ----------
+    data : DataFrame
+    Returns
+    ----------
+    df : DataFrame
+    """
     df = pd.DataFrame(columns=['exchange', 'timestamp', 'levels', 'ask_volume', 'bid_volume', 'total_volume', 'mid_price', 'vwap'])
     for row in range(len(data)):
         ob = ast.literal_eval(data['orderbook'][row])
@@ -79,6 +120,17 @@ def dataframe(data):
     return df
 
 def eff_spread(data):
+    """
+    Function creates dataframe of spread
+    and effective spread.
+    
+    Parameters
+    ----------
+    data : DataFrame
+    Returns
+    ----------
+    df : DataFrame
+    """
     df = pd.DataFrame(columns=['timestamp', 'close', 'spread', 'effective spread'])
     for row in range(len(data)):
         ob = ast.literal_eval(data['orderbook'][row])

@@ -8,10 +8,9 @@
 
 
 pandas
-scipy
 numpy
 jupyter
-pytz
-datetime
 ccxt
+ast
+time
 asyncio
