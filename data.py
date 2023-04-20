@@ -29,6 +29,8 @@ data = pd.read_csv('files/dat.csv')
 
 df = fn.dataframe(data)
 
+df.to_csv('files/data_volumes.csv')
+
 df_eff_spread = fn.eff_spread(data)
 
 print(df,df_eff_spread)
