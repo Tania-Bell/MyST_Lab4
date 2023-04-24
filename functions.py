@@ -132,10 +132,27 @@ def eff_spread(data):
     df : DataFrame
     """
     df = pd.DataFrame(columns=['timestamp', 'close', 'spread', 'effective spread'])
+    def calculate_covariance(x, y):
+        return np.cov(x, y)[0][1]
+
+    def calculate_effective_spread(data, window=5):
+        closing_prices = [ast.literal_eval(data['orderbook'][row])['closing_price'] for row in range(len(data))]
+        price_changes = [closing_prices[i] - closing_prices[i - 1] for i in range(len(closing_prices))]
+        price_changes_lag = price_changes[:-window]  # Eliminar los últimos 'window' elementos
+
+        covariance_values = [calculate_covariance(price_changes[i:i + window], price_changes_lag[i:i + window]) for i in range(1, len(price_changes_lag) - window + 1)]
+
+
+        effective_spread_values = [2 * np.sqrt(abs(cov)) for cov in covariance_values]
+        return effective_spread_values
+
     for row in range(len(data)):
         ob = ast.literal_eval(data['orderbook'][row])
         df.loc[row, 'timestamp'] = data['datetime'][row]
-        df.loc[row, 'close'] = 0 #poner close
-        df.loc[row, 'spread'] = 0 #poner el spread
-        df.loc[row, 'effective spread'] = 0 #poner effectice pread
+        df.loc[row, 'close'] = ob['closing_price'] # Precio de cierre
+        df.loc[row, 'spread'] = np.mean(ob['spread']) # Spread promedio del OB
+    eff_spread_list = calculate_effective_spread(data)
+    eff_spread_list.extend([np.nan] * abs(len(eff_spread_list) - len(data)))
+    df['effective spread'] = eff_spread_list
+    df.dropna(inplace=True)
     return df
