@@ -15,9 +15,9 @@ series["binance_ETHUSDT"]
 effective_spreads["binance_ETHUSDT"]
 series["bitfinex_BTCUSDT"]
 effective_spreads["bitfinex_BTCUSDT"]
-series["bintfinex_ADAUSDT"]
+series["bitfinex_ADAUSDT"]
 effective_spreads["bintfinex_ADAUSDT"]
-series["bintfinex_ETHUSDT"]
+series["bitfinex_ETHUSDT"]
 effective_spreads["bintfinex_ETHUSDT"]
 
 
