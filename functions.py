@@ -5,6 +5,7 @@ import time
 import numpy as np
 import pandas as pd
 import ast
+import os
 
 
 async def async_client(exchange_id, run_time: int, symbol: str):
@@ -157,3 +158,32 @@ def eff_spread(data):
     df['effective spread'] = eff_spread_list
     df.dropna(inplace=True)
     return df
+
+
+def data_open(filename):
+    default_route = 'files/'
+    data = pd.read_csv(default_route + filename)
+    df = dataframe(data)
+    df_eff_spread = eff_spread(data)
+    return df, df_eff_spread
+
+def get_file_names(directory_path):
+    """
+    Gets the list of the file names and
+    directories en the specified path."""
+    all_entries = os.listdir(directory_path)
+    # Filtrar solo los archivos (excluir directorios)
+    file_names = [entry for entry in all_entries if os.path.isfile(os.path.join(directory_path, entry))]
+    return file_names
+
+def consumir_orderbooks(data_files):
+    dataframes = {}
+    effective_spreads = {}
+
+    for file_name in data_files:
+        base_name = file_name.split('.')[0]
+        df, eff_spr = data_open(file_name)
+
+        dataframes[base_name] = df
+        effective_spreads[base_name] = eff_spr
+    return dataframes,effective_spreads
