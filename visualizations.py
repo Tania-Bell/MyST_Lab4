@@ -1,3 +1,5 @@
+import plotly.express as px
+
 def grafica_btc(dataframe): 
     fig=px.line(dataframe, x="timestamp", y="mid_price",color="exchange",title=(" Midprice de BTC/USDT"))
 
