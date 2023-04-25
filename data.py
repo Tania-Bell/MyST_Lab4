@@ -9,12 +9,16 @@ def data_open(filename):
     df = fn.dataframe(data)
     df_eff_spread = fn.eff_spread(data)
     return df, df_eff_spread
+
 def get_file_names(directory_path):
-    # Obtener la lista de nombres de archivos y directorios en el directorio especificado
+    """
+    Gets the list of the file names and
+    directories en the specified path."""
     all_entries = os.listdir(directory_path)
     # Filtrar solo los archivos (excluir directorios)
     file_names = [entry for entry in all_entries if os.path.isfile(os.path.join(directory_path, entry))]
     return file_names
+
 def consumir_orderbooks(data_files):
     dataframes = {}
     effective_spreads = {}
@@ -26,3 +30,4 @@ def consumir_orderbooks(data_files):
         dataframes[base_name] = df
         effective_spreads[base_name] = eff_spr
     return dataframes,effective_spreads
+

@@ -140,7 +140,8 @@ def eff_spread(data):
         price_changes = [closing_prices[i] - closing_prices[i - 1] for i in range(len(closing_prices))]
         price_changes_lag = price_changes[:-window]  # Eliminar los últimos 'window' elementos
 
-        covariance_values = [calculate_covariance(price_changes[i:i + window], price_changes_lag[i:i + window]) for i in range(1, len(price_changes_lag) - window + 1)]
+        covariance_values = [calculate_covariance(price_changes[i:i + window], 
+        price_changes_lag[i:i + window]) for i in range(1, len(price_changes_lag) - window + 1)]
 
 
         effective_spread_values = [2 * np.sqrt(abs(cov)) for cov in covariance_values]
